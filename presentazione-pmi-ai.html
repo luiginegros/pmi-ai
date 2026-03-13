@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ottimizzazione Processi PMI — AI Expert</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0A0F1E;
+    --navy2: #111827;
+    --blue: #1E3A8A;
+    --accent: #F59E0B;
+    --accent2: #EF4444;
+    --white: #F8FAFC;
+    --gray: #94A3B8;
+    --light: #E2E8F0;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    height: 100vh;
+    overflow: hidden;
+    cursor: default;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    width: 12px; height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.1s ease;
+    mix-blend-mode: difference;
+  }
+  .cursor-ring {
+    width: 36px; height: 36px;
+    border: 1.5px solid var(--accent);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transition: transform 0.15s ease, opacity 0.2s;
+    opacity: 0.6;
+  }
+
+  /* Slide container */
+  .slides {
+    width: 100%; height: 100vh;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .slide {
+    position: absolute;
+    width: 100%; height: 100%;
+    display: flex;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s cubic-bezier(.4,0,.2,1), transform 0.6s cubic-bezier(.4,0,.2,1);
+    transform: translateX(60px);
+  }
+  .slide.active {
+    opacity: 1;
+    pointer-events: all;
+    transform: translateX(0);
+  }
+  .slide.prev {
+    opacity: 0;
+    transform: translateX(-60px);
+  }
+
+  /* Navigation */
+  .nav {
+    position: fixed;
+    bottom: 32px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 8px; align-items: center;
+    z-index: 100;
+    background: rgba(10,15,30,0.7);
+    padding: 10px 20px;
+    border-radius: 999px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--gray);
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+  .dot.active { background: var(--accent); width: 24px; border-radius: 3px; }
+
+  .nav-btn {
+    background: none; border: none;
+    color: var(--white); cursor: pointer;
+    font-size: 18px; padding: 0 8px;
+    opacity: 0.6; transition: opacity 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .nav-btn:hover { opacity: 1; }
+
+  .slide-counter {
+    position: fixed;
+    top: 28px; right: 36px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--gray);
+    z-index: 100;
+    letter-spacing: 0.1em;
+  }
+
+  /* ========== SLIDE LAYOUTS ========== */
+
+  /* BIG NUMBER slides */
+  .layout-split { display: grid; grid-template-columns: 1fr 1fr; height: 100%; }
+  .layout-full { display: flex; flex-direction: column; justify-content: center; padding: 80px 100px; height: 100%; }
+  .layout-thirds { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; height: 100%; }
+
+  /* Accent bar */
+  .accent-bar {
+    width: 48px; height: 4px;
+    background: var(--accent);
+    margin-bottom: 24px;
+    border-radius: 2px;
+  }
+
+  .tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  h1.display {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(60px, 8vw, 110px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--white);
+  }
+  h2.section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5vw, 72px);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--white);
+  }
+  .big-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 12vw, 160px);
+    line-height: 0.85;
+    color: var(--accent);
+    letter-spacing: -0.02em;
+  }
+  .body-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--light);
+    font-weight: 300;
+    max-width: 540px;
+  }
+  .body-text strong { color: var(--white); font-weight: 600; }
+
+  .bullet-list {
+    list-style: none;
+    margin-top: 24px;
+  }
+  .bullet-list li {
+    display: flex; align-items: flex-start; gap: 12px;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--light);
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .bullet-list li:last-child { border-bottom: none; }
+  .bullet-list li::before {
+    content: '→';
+    color: var(--accent);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  /* Left panel */
+  .panel-left {
+    background: var(--navy2);
+    padding: 70px 60px;
+    display: flex; flex-direction: column; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .panel-left::before {
+    content: '';
+    position: absolute;
+    top: -100px; left: -100px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(245,158,11,0.15) 0%, transparent 70%);
+    border-radius: 50%;
+  }
+
+  .panel-right {
+    background: var(--navy);
+    padding: 70px 60px;
+    display: flex; flex-direction: column; justify-content: center;
+    border-left: 1px solid rgba(255,255,255,0.06);
+    position: relative;
+  }
+
+  /* Stat card */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 24px;
+  }
+  .stat-card .num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-card .label {
+    font-size: 13px;
+    color: var(--gray);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  /* Bar chart */
+  .bar-chart { margin-top: 32px; }
+  .bar-item { margin-bottom: 20px; }
+  .bar-label {
+    display: flex; justify-content: space-between;
+    font-size: 13px; color: var(--gray);
+    margin-bottom: 6px;
+    font-family: 'DM Mono', monospace;
+  }
+  .bar-label span:last-child { color: var(--white); font-weight: 600; }
+  .bar-track {
+    height: 8px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--accent);
+    width: 0;
+    transition: width 1.2s cubic-bezier(.4,0,.2,1);
+  }
+  .bar-fill.blue { background: var(--blue); }
+  .bar-fill.red { background: var(--accent2); }
+
+  /* Phase steps */
+  .phase-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px; margin-top: 40px;
+  }
+  .phase-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 32px 28px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .phase-card:hover { border-color: var(--accent); }
+  .phase-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 3px;
+    background: var(--accent);
+  }
+  .phase-card:nth-child(2)::before { background: #3B82F6; }
+  .phase-card:nth-child(3)::before { background: #10B981; }
+  .phase-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    color: rgba(255,255,255,0.06);
+    line-height: 1;
+    position: absolute;
+    top: 16px; right: 20px;
+  }
+  .phase-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.05em;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+  .phase-desc { font-size: 14px; color: var(--gray); line-height: 1.6; }
+  .phase-tag {
+    display: inline-block;
+    margin-top: 16px;
+    background: rgba(245,158,11,0.15);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    letter-spacing: 0.1em;
+  }
+  .phase-card:nth-child(2) .phase-tag { background: rgba(59,130,246,0.15); color: #60A5FA; }
+  .phase-card:nth-child(3) .phase-tag { background: rgba(16,185,129,0.15); color: #34D399; }
+
+  /* Pricing */
+  .pricing-grid {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px; margin-top: 40px;
+  }
+  .price-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 36px 28px;
+    position: relative;
+    transition: transform 0.3s, border-color 0.3s;
+  }
+  .price-card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.2); }
+  .price-card.featured {
+    background: rgba(245,158,11,0.08);
+    border-color: var(--accent);
+  }
+  .price-badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--navy);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: 999px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .price-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 32px;
+    letter-spacing: 0.05em;
+    color: var(--white);
+  }
+  .price-amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--accent);
+    line-height: 1;
+    margin: 12px 0;
+  }
+  .price-card:first-child .price-amount { color: #34D399; font-size: 36px; }
+  .price-roi {
+    font-size: 12px;
+    color: var(--gray);
+    margin-bottom: 20px;
+    font-family: 'DM Mono', monospace;
+  }
+  .price-features { list-style: none; }
+  .price-features li {
+    font-size: 13px;
+    color: var(--light);
+    padding: 7px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex; gap: 8px; align-items: flex-start;
+  }
+  .price-features li::before { content: '✓'; color: var(--accent); flex-shrink: 0; }
+
+  /* Results grid */
+  .results-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 20px; margin-top: 36px;
+    max-width: 700px;
+  }
+  .result-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    padding: 28px;
+  }
+  .result-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .result-label { font-size: 13px; color: var(--gray); margin-top: 6px; line-height: 1.4; }
+
+  /* CTA slide */
+  .cta-bg {
+    background: linear-gradient(135deg, var(--navy) 0%, #0D1B3E 100%);
+    position: relative; overflow: hidden;
+  }
+  .cta-bg::before {
+    content: '';
+    position: absolute;
+    top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(245,158,11,0.12) 0%, transparent 60%);
+    border-radius: 50%;
+  }
+  .cta-bg::after {
+    content: '';
+    position: absolute;
+    bottom: -150px; left: -100px;
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(30,58,138,0.3) 0%, transparent 60%);
+    border-radius: 50%;
+  }
+  .cta-content { position: relative; z-index: 2; }
+
+  .cta-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--accent);
+    color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    padding: 16px 32px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    margin-top: 40px;
+    margin-right: 16px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+  }
+  .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,158,11,0.3); }
+  .cta-btn.secondary {
+    background: transparent;
+    color: var(--white);
+    border: 1.5px solid rgba(255,255,255,0.2);
+  }
+  .cta-btn.secondary:hover { border-color: var(--white); box-shadow: none; }
+
+  /* Grid BG decoration */
+  .grid-bg {
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+
+  /* Logo top left */
+  .logo {
+    position: fixed; top: 24px; left: 36px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    z-index: 100;
+    opacity: 0.8;
+  }
+  .logo span { color: var(--accent); }
+
+  /* Progress bar */
+  .progress {
+    position: fixed; top: 0; left: 0;
+    height: 2px; background: var(--accent);
+    z-index: 200;
+    transition: width 0.5s ease;
+  }
+
+  /* Pill tag */
+  .pill {
+    display: inline-block;
+    background: rgba(245,158,11,0.15);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .source-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(148,163,184,0.5);
+    margin-top: 20px;
+    letter-spacing: 0.05em;
+  }
+
+  /* Keyboard hint */
+  .key-hint {
+    position: fixed; bottom: 32px; right: 36px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(148,163,184,0.4);
+    z-index: 100;
+    display: flex; gap: 12px; align-items: center;
+  }
+  .key {
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  /* Animate in */
+  .slide.active .animate-in {
+    animation: slideUp 0.6s cubic-bezier(.4,0,.2,1) both;
+  }
+  .slide.active .animate-in:nth-child(2) { animation-delay: 0.1s; }
+  .slide.active .animate-in:nth-child(3) { animation-delay: 0.2s; }
+  .slide.active .animate-in:nth-child(4) { animation-delay: 0.3s; }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+
+
+<div class="progress" id="progress"></div>
+<div class="logo">AI<span>.</span>PMI</div>
+<div class="slide-counter" id="counter">01 / 11</div>
+
+<div class="key-hint">
+  <span class="key">←</span>
+  <span class="key">→</span>
+  <span style="margin-left:4px">NAVIGA</span>
+</div>
+
+<div class="slides" id="slides">
+
+  <!-- SLIDE 1: COVER -->
+  <div class="slide active" id="s1">
+    <div class="grid-bg"></div>
+    <div class="layout-split">
+      <div class="panel-left" style="background: linear-gradient(135deg, #0A0F1E 0%, #0D1B3E 100%);">
+        <div class="animate-in">
+          <div class="tag">AI Expert per PMI Italiane</div>
+          <h1 class="display" style="font-size: clamp(70px,9vw,130px);">OTTIMIZ<br>ZAZIONE<br>PROCESSI</h1>
+        </div>
+        <div class="animate-in" style="margin-top:32px;">
+          <p class="body-text">Aiuto le PMI italiane a lavorare meglio, ridurre gli sprechi e crescere con intelligenza artificiale.<br><strong>Approccio pratico. Risultati misurabili. Zero tecnicismi.</strong></p>
+        </div>
+        <div class="animate-in" style="margin-top:40px; display:flex; gap:24px;">
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--accent);">2025</div>
+            <div style="font-size:12px;color:var(--gray);font-family:'DM Mono',monospace;">EDIZIONE</div>
+          </div>
+          <div style="width:1px;background:rgba(255,255,255,0.1);"></div>
+          <div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--white);">PMI IT</div>
+            <div style="font-size:12px;color:var(--gray);font-family:'DM Mono',monospace;">TARGET</div>
+          </div>
+        </div>
+      </div>
+      <div class="panel-right" style="background:#0D1B3E; justify-content:center; align-items:center; display:flex;">
+        <div style="text-align:center; animation: slideUp 1s cubic-bezier(.4,0,.2,1) 0.3s both;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:180px;line-height:0.8;color:rgba(245,158,11,0.08);letter-spacing:-0.02em;user-select:none;">AI</div>
+          <div style="margin-top:-60px; position:relative; z-index:2;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.15em;color:var(--white);">INTELLIGENZA ARTIFICIALE</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:0.15em;color:var(--accent);">PER LE PMI ITALIANE</div>
+          </div>
+          <div style="margin-top:48px; display:flex; gap:16px; justify-content:center; flex-wrap:wrap;">
+            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:12px 20px;border-radius:8px;font-size:13px;color:var(--gray);">Diagnosi Gratuita</div>
+            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:12px 20px;border-radius:8px;font-size:13px;color:var(--gray);">Analisi AI</div>
+            <div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:12px 20px;border-radius:8px;font-size:13px;color:var(--gray);">Implementazione</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: CHI SONO -->
+  <div class="slide" id="s2">
+    <div class="grid-bg"></div>
+    <div class="layout-split">
+      <div class="panel-left">
+        <div class="animate-in"><div class="tag">Il Consulente</div></div>
+        <div class="animate-in"><h2 class="section-title">CHI<br>SONO</h2></div>
+        <div class="animate-in" style="margin-top:24px;">
+          <p class="body-text">Non vendo software.<br><strong>Affianco le PMI italiane</strong> per lavorare meglio, ridurre gli sprechi e crescere in modo sostenibile.</p>
+        </div>
+        <div class="animate-in">
+          <ul class="bullet-list" style="margin-top:28px;">
+            <li>Esperto di ottimizzazione dei processi aziendali</li>
+            <li>Specializzato nell'introduzione di strumenti AI pratici</li>
+            <li>Approccio consulenziale, non tecnologico</li>
+            <li>Focus su PMI italiane: conosco le vostre sfide</li>
+            <li>Risultati misurabili già nei primi 30 giorni</li>
+          </ul>
+        </div>
+      </div>
+      <div class="panel-right" style="justify-content:center;align-items:center;display:flex;">
+        <div class="animate-in" style="width:100%;">
+          <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:16px;padding:40px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:0.1em;color:var(--accent);margin-bottom:8px;">LA MIA PROMESSA</div>
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:42px;line-height:0.95;color:var(--white);margin-bottom:24px;">"ZERO TECNICISMI.<br>SOLO RISULTATI."</div>
+            <p style="font-size:14px;color:var(--gray);line-height:1.7;">Ogni PMI è diversa. Per questo parto sempre da una diagnosi personalizzata prima di proporre qualsiasi soluzione.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 3: IL PROBLEMA -->
+  <div class="slide" id="s3">
+    <div class="grid-bg"></div>
+    <div class="layout-full">
+      <div class="animate-in"><div class="tag">Il Problema</div></div>
+      <div class="animate-in"><h2 class="section-title">TI RICONOSCI<br>IN QUESTI PROBLEMI?</h2></div>
+      <div class="animate-in" style="display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-top:40px;">
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:28px 20px;border-top:3px solid var(--accent);">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--accent);">28%</div>
+          <div style="font-size:13px;color:var(--white);font-weight:600;margin:8px 0 6px;">Email e Riunioni</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.5;">del tempo lavorativo sprecato in comunicazioni inutili</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:28px 20px;border-top:3px solid #3B82F6;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;color:#3B82F6;">∞</div>
+          <div style="font-size:13px;color:var(--white);font-weight:600;margin:8px 0 6px;">Dipendenza<br>dalle Persone</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.5;">processi non documentati che si fermano se una persona manca</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:28px 20px;border-top:3px solid #8B5CF6;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;color:#8B5CF6;">?</div>
+          <div style="font-size:13px;color:var(--white);font-weight:600;margin:8px 0 6px;">Decisioni<br>senza Dati</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.5;">scelte basate su istinto invece che su informazioni concrete</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:28px 20px;border-top:3px solid #10B981;">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;color:#10B981;">✗</div>
+          <div style="font-size:13px;color:var(--white);font-weight:600;margin:8px 0 6px;">Impossibile<br>Delegare</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.5;">tutto dipende dall'imprenditore, la crescita è bloccata</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:28px 20px;border-top:3px solid var(--accent2);">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:40px;color:var(--accent2);">↺</div>
+          <div style="font-size:13px;color:var(--white);font-weight:600;margin:8px 0 6px;">Errori<br>Ripetuti</div>
+          <div style="font-size:12px;color:var(--gray);line-height:1.5;">gli stessi problemi si ripresentano ogni settimana senza soluzione</div>
+        </div>
+      </div>
+      <div class="animate-in" style="margin-top:28px;padding:20px 24px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:8px;display:inline-block;">
+        <span style="color:var(--accent2);font-weight:600;">Non è un problema di volontà.</span>
+        <span style="color:var(--light);"> È un problema di metodo e strumenti giusti.</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 4: NUMERI MERCATO -->
+  <div class="slide" id="s4">
+    <div class="grid-bg"></div>
+    <div class="layout-split">
+      <div class="panel-left">
+        <div class="animate-in"><div class="tag">Il Mercato AI 2025</div></div>
+        <div class="animate-in">
+          <div style="font-size:13px;color:var(--gray);margin-bottom:8px;font-family:'DM Mono',monospace;">MERCATO AI ITALIANO</div>
+          <div class="big-num">1,8<span style="font-size:0.4em;color:var(--white);">MLD€</span></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+            <div style="background:rgba(16,185,129,0.2);color:#34D399;font-family:'DM Mono',monospace;font-size:13px;padding:4px 12px;border-radius:4px;">+50% IN UN ANNO</div>
+          </div>
+        </div>
+        <div class="animate-in" style="margin-top:32px;">
+          <div class="bar-chart">
+            <div class="bar-item">
+              <div class="bar-label"><span>Grandi Imprese</span><span>71%</span></div>
+              <div class="bar-track"><div class="bar-fill" data-width="71"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-label"><span>PMI Italiane</span><span>8%</span></div>
+              <div class="bar-track"><div class="bar-fill red" data-width="8"></div></div>
+            </div>
+          </div>
+          <div style="margin-top:16px;font-size:12px;color:rgba(148,163,184,0.6);font-family:'DM Mono',monospace;">Il gap è cresciuto da 20 a <strong style="color:var(--accent2);">37 punti</strong> in 2 anni</div>
+        </div>
+        <div class="source-note">Fonte: Osservatorio AI Politecnico Milano 2025</div>
+      </div>
+      <div class="panel-right">
+        <div class="animate-in"><div class="tag">Confronto Europeo</div></div>
+        <div class="animate-in"><h2 class="section-title" style="font-size:48px;">L'ITALIA<br>È INDIETRO</h2></div>
+        <div class="animate-in">
+          <div class="bar-chart" style="margin-top:28px;">
+            <div class="bar-item">
+              <div class="bar-label"><span>🇩🇪 Germania</span><span>18%</span></div>
+              <div class="bar-track"><div class="bar-fill" data-width="18"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-label"><span>🇫🇷 Francia</span><span>15%</span></div>
+              <div class="bar-track"><div class="bar-fill" data-width="15"></div></div>
+            </div>
+            <div class="bar-item">
+              <div class="bar-label"><span>🇮🇹 Italia PMI</span><span>8%</span></div>
+              <div class="bar-track"><div class="bar-fill red" data-width="8"></div></div>
+            </div>
+          </div>
+          <div class="stat-grid" style="margin-top:28px;">
+            <div class="stat-card">
+              <div class="num">60%</div>
+              <div class="label">cita mancanza di competenze interne come freno principale</div>
+            </div>
+            <div class="stat-card">
+              <div class="num">47%</div>
+              <div class="label">non ha chiarezza normativa sull'utilizzo dell'AI</div>
+            </div>
+          </div>
+        </div>
+        <div class="source-note">Fonte: McKinsey 2024 — Osservatorio AI Politecnico Milano 2025</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 5: COSTO NON AGIRE -->
+  <div class="slide" id="s5">
+    <div class="grid-bg"></div>
+    <div class="layout-split">
+      <div class="panel-left" style="background:linear-gradient(135deg,#1a0a0a 0%,#0A0F1E 100%);">
+        <div class="animate-in"><div class="tag">Il Costo dell'Inazione</div></div>
+        <div class="animate-in">
+          <div style="font-size:13px;color:var(--gray);margin-bottom:8px;font-family:'DM Mono',monospace;">PERSI IN INEFFICIENZE / ANNO</div>
+          <div class="big-num" style="color:var(--accent2);">80<span style="font-size:0.35em;color:var(--white);">MLD€</span></div>
+          <p style="font-size:14px;color:var(--gray);margin-top:12px;max-width:400px;">Solo dalle PMI italiane. Ogni anno. Senza contare le opportunità di crescita mancate.</p>
+        </div>
+        <div class="animate-in" style="margin-top:32px;">
+          <ul class="bullet-list">
+            <li>Tempo sprecato = denaro che esce ogni giorno</li>
+            <li>Processi manuali = errori e rallentamenti continui</li>
+            <li>Decisioni senza dati = opportunità mancate</li>
+            <li>Concorrenti che si digitalizzano = svantaggio crescente</li>
+          </ul>
+        </div>
+        <div class="source-note">Fonte: Istat, Eurostat, McKinsey 2024</div>
+      </div>
+      <div class="panel-right">
+        <div class="animate-in"><div class="tag">Chi Adotta l'AI</div></div>
+        <div class="animate-in"><h2 class="section-title" style="font-size:46px;">I RISULTATI<br>DI CHI AGISCE</h2></div>
+        <div class="animate-in">
+          <div class="stat-grid" style="margin-top:28px;">
+            <div class="stat-card" style="border-color:rgba(16,185,129,0.3);">
+              <div class="num" style="color:#34D399;">+12%</div>
+              <div class="label">di ricavi medi per chi adotta AI in modo strutturato</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(16,185,129,0.3);">
+              <div class="num" style="color:#34D399;">-30%</div>
+              <div class="label">di costi operativi grazie all'ottimizzazione dei processi</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(245,158,11,0.3);">
+              <div class="num">30min</div>
+              <div class="label">risparmiati per attività per ogni collaboratore</div>
+            </div>
+            <div class="stat-card" style="border-color:rgba(245,158,11,0.3);">
+              <div class="num">58%</div>
+              <div class="label">delle aziende rileva impatto significativo sul proprio business</div>
+            </div>
+          </div>
+          <div style="margin-top:24px;padding:20px 24px;background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:8px;">
+            <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:#34D399;">UN'AZIENDA DA 10 PERSONE</div>
+            <div style="font-size:14px;color:var(--light);margin-top:4px;">può recuperare fino a <strong>€50.000 annui</strong> in produttività</div>
+          </div>
+        </div>
+        <div class="source-note">Fonte: McKinsey Global Institute, World Economic Forum 2023-2025</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 6: METODO 3 FASI -->
+  <div class="slide" id="s6">
+    <div class="grid-bg"></div>
+    <div class="layout-full">
+      <div class="animate-in"><div class="tag">Il Metodo</div></div>
+      <div class="animate-in"><h2 class="section-title">IL MIO APPROCCIO<br>IN 3 FASI</h2></div>
+      <div class="phase-grid animate-in">
+        <div class="phase-card">
+          <div class="phase-num">01</div>
+          <div class="phase-title">DIAGNOSI</div>
+          <p class="phase-desc">Survey personalizzata per mappare processi, criticità e potenziale della tua azienda. Identificazione delle aree di spreco. Report dettagliato consegnato in 5 giorni lavorativi.</p>
+          <span class="phase-tag">CONSEGNA IN 5 GIORNI</span>
+        </div>
+        <div class="phase-card">
+          <div class="phase-num">02</div>
+          <div class="phase-title">ANALISI AI</div>
+          <p class="phase-desc">L'intelligenza artificiale elabora i dati raccolti, identifica le priorità di intervento e calcola il valore economico recuperabile. Ogni raccomandazione è basata su dati reali della tua azienda.</p>
+          <span class="phase-tag" style="">VALORE ECONOMICO CALCOLATO</span>
+        </div>
+        <div class="phase-card">
+          <div class="phase-num">03</div>
+          <div class="phase-title">IMPLEMENTAZIONE</div>
+          <p class="phase-desc">Introduzione guidata degli strumenti giusti, formazione del team senza tecnicismi e monitoraggio continuo dei risultati. Primi KPI misurabili entro 30 giorni dall'avvio.</p>
+          <span class="phase-tag" style="background:rgba(16,185,129,0.15);color:#34D399;">RISULTATI IN 30 GIORNI</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: SURVEY -->
+  <div class="slide" id="s7">
+    <div class="grid-bg"></div>
+    <div class="layout-split">
+      <div class="panel-left">
+        <div class="animate-in"><div class="tag">Il Punto di Partenza</div></div>
+        <div class="animate-in">
+          <div style="font-size:13px;color:var(--gray);margin-bottom:8px;font-family:'DM Mono',monospace;">DURATA DELLA SURVEY</div>
+          <div class="big-num">10<span style="font-size:0.35em;color:var(--white);">MIN</span></div>
+          <div style="background:rgba(16,185,129,0.15);color:#34D399;font-family:'DM Mono',monospace;font-size:12px;padding:6px 14px;border-radius:4px;display:inline-block;margin-top:8px;letter-spacing:0.1em;">GRATUITA — SENZA IMPEGNO</div>
+        </div>
+        <div class="animate-in" style="margin-top:28px;">
+          <p class="body-text">Rispondere a domande su <strong>settore, dimensione aziendale, processi interni, strumenti usati e criticità principali</strong>.</p>
+          <p class="body-text" style="margin-top:12px;">L'AI elabora tutto e genera un report completamente personalizzato per la tua realtà.</p>
+        </div>
+      </div>
+      <div class="panel-right">
+        <div class="animate-in"><div class="tag">Cosa Ricevi</div></div>
+        <div class="animate-in"><h2 class="section-title" style="font-size:44px;">IL TUO<br>REPORT<br>GRATUITO</h2></div>
+        <div class="animate-in" style="margin-top:28px;">
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;gap:16px;align-items:flex-start;padding:16px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.07);">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);width:32px;flex-shrink:0;">1</div>
+              <div><strong style="font-size:14px;">3 Aree Prioritarie di Miglioramento</strong><br><span style="font-size:12px;color:var(--gray);">identificate e classificate per impatto economico</span></div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;padding:16px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.07);">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);width:32px;flex-shrink:0;">2</div>
+              <div><strong style="font-size:14px;">Valore Economico Recuperabile</strong><br><span style="font-size:12px;color:var(--gray);">stima concreta in euro nei prossimi 12 mesi</span></div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;padding:16px;background:rgba(255,255,255,0.03);border-radius:10px;border:1px solid rgba(255,255,255,0.07);">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);width:32px;flex-shrink:0;">3</div>
+              <div><strong style="font-size:14px;">Strumenti AI Consigliati</strong><br><span style="font-size:12px;color:var(--gray);">selezionati per la tua realtà specifica</span></div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:flex-start;padding:16px;background:rgba(245,158,11,0.08);border-radius:10px;border:1px solid rgba(245,158,11,0.25);">
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--accent);width:32px;flex-shrink:0;">★</div>
+              <div><strong style="font-size:14px;color:var(--accent);">Certificato di Efficienza Operativa</strong><br><span style="font-size:12px;color:var(--gray);">documento ufficiale del tuo livello attuale e potenziale</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 8: CERTIFICATO -->
+  <div class="slide" id="s8">
+    <div class="grid-bg"></div>
+    <div class="layout-full">
+      <div class="animate-in"><div class="tag">Il Documento Ufficiale</div></div>
+      <div class="animate-in"><h2 class="section-title">CERTIFICATO DI<br>EFFICIENZA OPERATIVA</h2></div>
+      <div class="animate-in" style="display:grid;grid-template-columns:1fr 1fr;gap:32px;margin-top:40px;max-width:900px;">
+        <div>
+          <div style="font-size:13px;color:var(--accent);font-family:'DM Mono',monospace;letter-spacing:0.1em;margin-bottom:16px;">COSA CERTIFICA</div>
+          <div style="display:flex;flex-direction:column;gap:12px;">
+            <div style="display:flex;gap:16px;align-items:center;">
+              <div style="width:48px;height:48px;background:rgba(245,158,11,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent);flex-shrink:0;">◎</div>
+              <div><strong style="font-size:14px;">Punteggio di Efficienza</strong><br><span style="font-size:12px;color:var(--gray);">su scala 0-100, con benchmark di settore</span></div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:center;">
+              <div style="width:48px;height:48px;background:rgba(239,68,68,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--accent2);flex-shrink:0;">!</div>
+              <div><strong style="font-size:14px;">3 Aree Critiche Prioritarie</strong><br><span style="font-size:12px;color:var(--gray);">con impatto economico quantificato</span></div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:center;">
+              <div style="width:48px;height:48px;background:rgba(16,185,129,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:#34D399;flex-shrink:0;">€</div>
+              <div><strong style="font-size:14px;">Valore Economico Recuperabile</strong><br><span style="font-size:12px;color:var(--gray);">stima nei prossimi 12 mesi</span></div>
+            </div>
+            <div style="display:flex;gap:16px;align-items:center;">
+              <div style="width:48px;height:48px;background:rgba(59,130,246,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:22px;color:#60A5FA;flex-shrink:0;">→</div>
+              <div><strong style="font-size:14px;">Roadmap degli Interventi</strong><br><span style="font-size:12px;color:var(--gray);">prioritizzata per massimizzare il ROI</span></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:13px;color:var(--accent);font-family:'DM Mono',monospace;letter-spacing:0.1em;margin-bottom:16px;">PERCHÉ È UTILE</div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:32px;">
+            <ul class="bullet-list" style="margin-top:0;">
+              <li><strong>Internamente</strong> — motiva il team e giustifica gli investimenti in miglioramento</li>
+              <li><strong>Con le banche</strong> — dimostra la solidità operativa dell'azienda</li>
+              <li><strong>Con gli investitori</strong> — evidenzia il potenziale di crescita non ancora sfruttato</li>
+              <li><strong>Con i partner</strong> — segnala affidabilità e approccio strutturato</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 9: RISULTATI -->
+  <div class="slide" id="s9">
+    <div class="grid-bg"></div>
+    <div class="layout-full">
+      <div class="animate-in"><div class="tag">I Risultati</div></div>
+      <div class="animate-in"><h2 class="section-title">COSA CAMBIA<br>CONCRETAMENTE</h2></div>
+      <div class="animate-in" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px;margin-top:40px;">
+        <div class="result-card" style="border-top:3px solid var(--accent);">
+          <div class="result-num">30<span style="font-size:0.5em;color:var(--gray);">gg</span></div>
+          <div class="result-label">per i primi risultati misurabili dall'avvio del progetto</div>
+        </div>
+        <div class="result-card" style="border-top:3px solid #3B82F6;">
+          <div class="result-num" style="color:#60A5FA;">3-5x</div>
+          <div class="result-label">ROI medio nel primo anno di ottimizzazione</div>
+        </div>
+        <div class="result-card" style="border-top:3px solid #10B981;">
+          <div class="result-num" style="color:#34D399;">10h</div>
+          <div class="result-label">settimanali risparmiate per collaboratore grazie all'AI</div>
+        </div>
+        <div class="result-card" style="border-top:3px solid #8B5CF6;">
+          <div class="result-num" style="color:#A78BFA;">58%</div>
+          <div class="result-label">delle aziende rileva impatto significativo sul business</div>
+        </div>
+      </div>
+      <div class="animate-in" style="margin-top:32px;display:flex;gap:16px;flex-wrap:wrap;">
+        <div style="padding:14px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;font-size:14px;color:var(--light);">✓ Processi documentati e ripetibili</div>
+        <div style="padding:14px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;font-size:14px;color:var(--light);">✓ Decisioni basate su dati reali</div>
+        <div style="padding:14px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;font-size:14px;color:var(--light);">✓ Team più autonomo e produttivo</div>
+        <div style="padding:14px 20px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:8px;font-size:14px;color:var(--light);">✓ Meno attività manuali e ripetitive</div>
+      </div>
+      <div class="source-note">Fonte: Osservatorio AI Politecnico Milano — McKinsey Global Institute 2025</div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: PACCHETTI -->
+  <div class="slide" id="s10">
+    <div class="grid-bg"></div>
+    <div class="layout-full">
+      <div class="animate-in"><div class="tag">I Servizi</div></div>
+      <div class="animate-in"><h2 class="section-title">SCEGLI IL TUO<br>PERCORSO</h2></div>
+      <div class="pricing-grid animate-in">
+        <div class="price-card">
+          <div class="price-name">DIAGNOSI</div>
+          <div class="price-amount">FREE</div>
+          <div class="price-roi" style="color:#34D399;">Inizia senza rischio</div>
+          <ul class="price-features">
+            <li>Survey personalizzata (10 min)</li>
+            <li>Report con 3 aree prioritarie</li>
+            <li>Stima valore economico recuperabile</li>
+            <li>Certificato di Efficienza Operativa</li>
+            <li>Consegna entro 5 giorni lavorativi</li>
+          </ul>
+        </div>
+        <div class="price-card featured">
+          <div class="price-badge">PIÙ SCELTO</div>
+          <div class="price-name">STARTER</div>
+          <div class="price-amount">1.500€</div>
+          <div class="price-roi">Risparmio atteso: €15.000–20.000/anno</div>
+          <ul class="price-features">
+            <li>Tutto il pacchetto Diagnosi</li>
+            <li>Implementazione 3 processi prioritari</li>
+            <li>Formazione del team (no tecnicismi)</li>
+            <li>Strumenti AI selezionati e configurati</li>
+            <li>Supporto e monitoraggio 30 giorni</li>
+            <li>ROI atteso: 10x–13x l'investimento</li>
+          </ul>
+        </div>
+        <div class="price-card">
+          <div class="price-name">FULL</div>
+          <div class="price-amount">3.500€</div>
+          <div class="price-roi">Risparmio atteso: €40.000–60.000/anno</div>
+          <ul class="price-features">
+            <li>Ottimizzazione completa di tutti i processi</li>
+            <li>Integrazione AI in tutti i flussi di lavoro</li>
+            <li>Dashboard di monitoraggio KPI</li>
+            <li>Formazione avanzata del team</li>
+            <li>Supporto continuativo per 3 mesi</li>
+            <li>ROI atteso: 11x–17x l'investimento</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 11: CTA -->
+  <div class="slide cta-bg" id="s11">
+    <div class="grid-bg"></div>
+    <div class="layout-full cta-content">
+      <div class="animate-in"><div class="tag">Inizia Oggi</div></div>
+      <div class="animate-in">
+        <h1 class="display" style="font-size:clamp(60px,9vw,120px);">INIZIAMO<br>OGGI.</h1>
+      </div>
+      <div class="animate-in">
+        <p class="body-text" style="margin-top:24px;font-size:18px;max-width:600px;">Nessun impegno. Nessun tecnicismo.<br>Solo un'analisi concreta di <strong>quanto vale il miglioramento per la tua azienda</strong>.</p>
+      </div>
+      <div class="animate-in" style="display:flex;gap:16px;flex-wrap:wrap;margin-top:40px;">
+        <a href="survey-pmi-ai.html" class="cta-btn">📋 Compila la Survey Gratuita</a>
+        <a href="#" class="cta-btn secondary">📞 Prenota una Call di 30 min</a>
+      </div>
+      <div class="animate-in" style="margin-top:48px;display:flex;gap:32px;flex-wrap:wrap;">
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray);letter-spacing:0.1em;margin-bottom:6px;">EMAIL</div>
+          <div style="font-size:15px;color:var(--white);">[<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="b2ded39fc6c7d39fd7dfd3dbdef2d6dddfdbdcdbdd9cdbc6">[email&#160;protected]</a>]</div>
+        </div>
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray);letter-spacing:0.1em;margin-bottom:6px;">TELEFONO</div>
+          <div style="font-size:15px;color:var(--white);">[+39 000 000 0000]</div>
+        </div>
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray);letter-spacing:0.1em;margin-bottom:6px;">SITO WEB</div>
+          <div style="font-size:15px;color:var(--white);">[www.tuosito.it]</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /slides -->
+
+<!-- Navigation -->
+<nav class="nav" id="navDots"></nav>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+
+  // Slides
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  let isAnimating = false;
+
+  // Build dots nav
+  const nav = document.getElementById('navDots');
+  const prevBtn = document.createElement('button');
+  prevBtn.className = 'nav-btn';
+  prevBtn.innerHTML = '←';
+  prevBtn.onclick = () => go(current - 1);
+  nav.appendChild(prevBtn);
+
+  const dots = [];
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => go(i);
+    dots.push(d);
+    nav.appendChild(d);
+  }
+
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'nav-btn';
+  nextBtn.innerHTML = '→';
+  nextBtn.onclick = () => go(current + 1);
+  nav.appendChild(nextBtn);
+
+  function go(n) {
+    if (isAnimating) return;
+    if (n < 0 || n >= total) return;
+    isAnimating = true;
+
+    slides[current].classList.remove('active');
+    slides[current].classList.add('prev');
+    dots[current].classList.remove('active');
+
+    current = n;
+    slides[current].classList.remove('prev');
+    slides[current].classList.add('active');
+    dots[current].classList.add('active');
+
+    document.getElementById('counter').textContent =
+      String(current + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0');
+
+    document.getElementById('progress').style.width = ((current + 1) / total * 100) + '%';
+
+    setTimeout(() => {
+      const bars = slides[current].querySelectorAll('.bar-fill');
+      bars.forEach(b => { b.style.width = b.dataset.width + '%'; });
+    }, 200);
+
+    setTimeout(() => {
+      document.querySelectorAll('.slide.prev').forEach(s => s.classList.remove('prev'));
+      isAnimating = false;
+    }, 700);
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ') go(current + 1);
+    if (e.key === 'ArrowLeft') go(current - 1);
+  });
+
+  // Touch/swipe
+  let touchX = 0;
+  document.addEventListener('touchstart', e => touchX = e.touches[0].clientX);
+  document.addEventListener('touchend', e => {
+    const diff = touchX - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) go(diff > 0 ? current + 1 : current - 1);
+  });
+
+  // Init progress bar
+  setTimeout(() => {
+    document.getElementById('progress').style.width = (1 / total * 100) + '%';
+  }, 100);
+
+</script>
+</body>
+</html>

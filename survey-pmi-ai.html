@@ -1,0 +1,1010 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnosi Gratuita — AI Expert PMI</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0A0F1E;
+    --navy2: #111827;
+    --blue: #1E3A8A;
+    --accent: #F59E0B;
+    --accent2: #EF4444;
+    --green: #10B981;
+    --white: #F8FAFC;
+    --gray: #94A3B8;
+    --light: #E2E8F0;
+    --border: rgba(255,255,255,0.08);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--navy);
+    color: var(--white);
+    min-height: 100vh;
+  }
+
+  /* TOP BAR */
+  .topbar {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: 64px;
+    background: rgba(10,15,30,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    z-index: 100;
+  }
+  .logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px; letter-spacing: 0.08em;
+  }
+  .logo span { color: var(--accent); }
+
+  .progress-wrap {
+    display: flex; align-items: center; gap: 16px;
+    flex: 1; max-width: 400px; margin: 0 auto;
+  }
+  .progress-bar {
+    flex: 1; height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px; overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%; background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    width: 25%;
+  }
+  .progress-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--gray);
+    white-space: nowrap;
+    letter-spacing: 0.08em;
+  }
+
+  /* MAIN */
+  .main {
+    padding-top: 64px;
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .container {
+    width: 100%; max-width: 780px;
+    padding: 60px 40px;
+  }
+
+  /* STEP */
+  .step { display: none; }
+  .step.active { display: block; animation: fadeIn 0.4s ease both; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .step-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 5vw, 60px);
+    line-height: 0.95; letter-spacing: 0.02em;
+    color: var(--white); margin-bottom: 10px;
+  }
+  .step-sub {
+    font-size: 15px; color: var(--gray);
+    line-height: 1.6; margin-bottom: 40px;
+    max-width: 520px;
+  }
+
+  /* FORM ELEMENTS */
+  .form-group { margin-bottom: 24px; }
+
+  label {
+    display: block;
+    font-size: 13px; font-weight: 600;
+    color: var(--light);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  label .req { color: var(--accent); margin-left: 3px; }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  select,
+  textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.04);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px; color: var(--white);
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  input::placeholder, textarea::placeholder { color: rgba(148,163,184,0.5); }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--accent);
+    background: rgba(245,158,11,0.05);
+  }
+  select { cursor: pointer; }
+  select option { background: var(--navy2); color: var(--white); }
+  textarea { resize: vertical; min-height: 100px; }
+
+  /* Grid 2 col */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media(max-width:600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* RADIO / CHECKBOX CARDS */
+  .card-group {
+    display: grid; gap: 10px;
+  }
+  .card-group.cols-2 { grid-template-columns: 1fr 1fr; }
+  .card-group.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  @media(max-width:600px) {
+    .card-group.cols-2, .card-group.cols-3 { grid-template-columns: 1fr; }
+  }
+
+  .card-option {
+    position: relative; cursor: pointer;
+  }
+  .card-option input {
+    position: absolute; opacity: 0; width: 0; height: 0;
+  }
+  .card-label {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px; color: var(--light);
+    transition: all 0.2s; cursor: pointer;
+    user-select: none;
+  }
+  .card-option input:checked + .card-label {
+    border-color: var(--accent);
+    background: rgba(245,158,11,0.08);
+    color: var(--white);
+  }
+  .card-label:hover {
+    border-color: rgba(245,158,11,0.4);
+    background: rgba(255,255,255,0.05);
+  }
+  .card-icon {
+    font-size: 20px; width: 28px; text-align: center; flex-shrink: 0;
+  }
+
+  /* RANGE SLIDER */
+  .slider-group { margin-bottom: 24px; }
+  .slider-labels {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--gray);
+    font-family: 'DM Mono', monospace;
+    margin-top: 6px;
+  }
+  input[type="range"] {
+    width: 100%; height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 3px; border: none;
+    outline: none; cursor: pointer;
+    padding: 0;
+    -webkit-appearance: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--accent);
+    cursor: pointer;
+    border: 3px solid var(--navy);
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  .slider-value {
+    display: inline-block;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px; color: var(--accent);
+    margin-top: 4px;
+  }
+
+  /* PAIN RATING */
+  .pain-item {
+    display: flex; align-items: center; gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .pain-item:last-child { border-bottom: none; }
+  .pain-label { flex: 1; font-size: 14px; color: var(--light); }
+  .pain-stars { display: flex; gap: 6px; }
+  .star-btn {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--gray); cursor: pointer;
+    font-size: 14px;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .star-btn.active {
+    background: rgba(245,158,11,0.15);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* BUTTONS */
+  .btn-row {
+    display: flex; gap: 12px; margin-top: 40px;
+    align-items: center;
+  }
+  .btn-next {
+    background: var(--accent); color: var(--navy);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700; font-size: 15px;
+    padding: 16px 36px;
+    border-radius: 10px; border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .btn-next:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(245,158,11,0.3);
+  }
+  .btn-next:disabled {
+    opacity: 0.4; cursor: not-allowed; transform: none; box-shadow: none;
+  }
+  .btn-back {
+    background: transparent;
+    color: var(--gray);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 16px 24px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-back:hover { color: var(--white); border-color: rgba(255,255,255,0.2); }
+
+  /* SUCCESS */
+  .success-screen {
+    text-align: center; padding: 60px 20px;
+    display: none;
+  }
+  .success-screen.active { display: block; animation: fadeIn 0.5s ease both; }
+  .success-icon {
+    width: 80px; height: 80px;
+    background: rgba(16,185,129,0.15);
+    border: 2px solid var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 32px;
+    font-size: 36px;
+  }
+  .success-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px; color: var(--white);
+    letter-spacing: 0.02em; margin-bottom: 16px;
+  }
+  .success-sub {
+    font-size: 16px; color: var(--gray);
+    line-height: 1.7; max-width: 480px;
+    margin: 0 auto 32px;
+  }
+  .success-badge {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: rgba(245,158,11,0.1);
+    border: 1px solid rgba(245,158,11,0.3);
+    padding: 14px 24px; border-radius: 10px;
+    font-size: 14px; color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* SECTION DIVIDER */
+  .divider {
+    height: 1px; background: var(--border);
+    margin: 32px 0;
+  }
+
+  /* ERROR */
+  .field-error {
+    font-size: 12px; color: var(--accent2);
+    margin-top: 6px;
+    font-family: 'DM Mono', monospace;
+    display: none;
+  }
+  .field-error.show { display: block; }
+  input.error, select.error, textarea.error {
+    border-color: var(--accent2) !important;
+  }
+
+  /* INFO BOX */
+  .info-box {
+    background: rgba(245,158,11,0.06);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    font-size: 13px; color: var(--gray);
+    line-height: 1.6; margin-bottom: 28px;
+  }
+  .info-box strong { color: var(--accent); }
+
+  /* Loading overlay */
+  .loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(10,15,30,0.9);
+    display: none; align-items: center; justify-content: center;
+    z-index: 999; flex-direction: column; gap: 20px;
+  }
+  .loading-overlay.show { display: flex; }
+  .spinner {
+    width: 48px; height: 48px;
+    border: 3px solid rgba(245,158,11,0.2);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px; color: var(--gray);
+    letter-spacing: 0.1em;
+  }
+
+  /* Background grid */
+  .bg-grid {
+    position: fixed; inset: 0; pointer-events: none;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+    z-index: 0;
+  }
+  .main { position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+
+<div class="bg-grid"></div>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">AI<span>.</span>PMI</div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="progress-label" id="progressLabel">SEZIONE 1 / 4</div>
+  </div>
+  <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--gray);">DIAGNOSI GRATUITA</div>
+</div>
+
+<!-- LOADING -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="loading-text">INVIO IN CORSO...</div>
+</div>
+
+<div class="main">
+<div class="container">
+
+  <!-- ===== STEP 1: ANAGRAFICA ===== -->
+  <div class="step active" id="step1">
+    <div class="step-tag">Sezione 1 di 4 — Anagrafica Aziendale</div>
+    <h1 class="step-title">PARLACI<br>DELLA TUA<br>AZIENDA</h1>
+    <p class="step-sub">Pochi dati per capire il tuo contesto. Il report sarà completamente personalizzato.</p>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Nome Azienda <span class="req">*</span></label>
+        <input type="text" id="nomeAzienda" placeholder="Es. Rossi Srl">
+        <div class="field-error" id="err-nomeAzienda">Campo obbligatorio</div>
+      </div>
+      <div class="form-group">
+        <label>Nome e Cognome <span class="req">*</span></label>
+        <input type="text" id="nomeContatto" placeholder="Es. Mario Rossi">
+        <div class="field-error" id="err-nomeContatto">Campo obbligatorio</div>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="form-group">
+        <label>Email aziendale <span class="req">*</span></label>
+        <input type="email" id="email" placeholder="mario@azienda.it">
+        <div class="field-error" id="err-email">Inserisci un'email valida</div>
+      </div>
+      <div class="form-group">
+        <label>Telefono</label>
+        <input type="tel" id="telefono" placeholder="+39 000 000 0000">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Settore di attività <span class="req">*</span></label>
+      <select id="settore">
+        <option value="">— Seleziona il settore —</option>
+        <option>Manifatturiero / Produzione</option>
+        <option>Commercio / Retail</option>
+        <option>Servizi alle imprese</option>
+        <option>Edilizia / Costruzioni</option>
+        <option>Logistica / Trasporti</option>
+        <option>Alimentare / Ristorazione</option>
+        <option>Salute / Benessere</option>
+        <option>Tecnologia / IT</option>
+        <option>Studi professionali (Legale, Contabile...)</option>
+        <option>Turismo / Hospitality</option>
+        <option>Altro</option>
+      </select>
+      <div class="field-error" id="err-settore">Seleziona un settore</div>
+    </div>
+
+    <div class="form-group">
+      <label>Numero di dipendenti <span class="req">*</span></label>
+      <div class="card-group cols-3">
+        <label class="card-option">
+          <input type="radio" name="dipendenti" value="1-5">
+          <div class="card-label"><span class="card-icon">👤</span> 1 – 5</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="dipendenti" value="6-15">
+          <div class="card-label"><span class="card-icon">👥</span> 6 – 15</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="dipendenti" value="16-50">
+          <div class="card-label"><span class="card-icon">🏢</span> 16 – 50</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="dipendenti" value="51-100">
+          <div class="card-label"><span class="card-icon">🏭</span> 51 – 100</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="dipendenti" value="100+">
+          <div class="card-label"><span class="card-icon">🌐</span> 100+</div>
+        </label>
+      </div>
+      <div class="field-error" id="err-dipendenti">Seleziona il numero di dipendenti</div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-next" onclick="nextStep(1)">Continua →</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 2: PROCESSI ===== -->
+  <div class="step" id="step2">
+    <div class="step-tag">Sezione 2 di 4 — Processi e Strumenti</div>
+    <h1 class="step-title">COME<br>LAVORATE<br>OGGI?</h1>
+    <p class="step-sub">Vogliamo capire gli strumenti che usi e dove si concentrano le inefficienze.</p>
+
+    <div class="form-group">
+      <label>Quali strumenti usi per gestire il lavoro? <span class="req">*</span> <span style="color:var(--gray);font-weight:400;">(più risposte)</span></label>
+      <div class="card-group cols-2">
+        <label class="card-option">
+          <input type="checkbox" name="strumenti" value="Email / WhatsApp">
+          <div class="card-label"><span class="card-icon">📧</span> Email / WhatsApp</div>
+        </label>
+        <label class="card-option">
+          <input type="checkbox" name="strumenti" value="Fogli Excel / Google Sheets">
+          <div class="card-label"><span class="card-icon">📊</span> Fogli Excel / Google Sheets</div>
+        </label>
+        <label class="card-option">
+          <input type="checkbox" name="strumenti" value="Gestionale ERP">
+          <div class="card-label"><span class="card-icon">🖥️</span> Gestionale ERP</div>
+        </label>
+        <label class="card-option">
+          <input type="checkbox" name="strumenti" value="CRM (clienti)">
+          <div class="card-label"><span class="card-icon">🤝</span> CRM (gestione clienti)</div>
+        </label>
+        <label class="card-option">
+          <input type="checkbox" name="strumenti" value="Project management (Trello, Asana...)">
+          <div class="card-label"><span class="card-icon">📋</span> Project management</div>
+        </label>
+        <label class="card-option">
+          <input type="checkbox" name="strumenti" value="Tutto su carta / memoria">
+          <div class="card-label"><span class="card-icon">📝</span> Carta / memoria</div>
+        </label>
+      </div>
+      <div class="field-error" id="err-strumenti">Seleziona almeno uno strumento</div>
+    </div>
+
+    <div class="form-group">
+      <label>Qual è il processo aziendale più critico per voi? <span class="req">*</span></label>
+      <select id="processoKritico">
+        <option value="">— Seleziona —</option>
+        <option>Gestione ordini e clienti</option>
+        <option>Produzione e operations</option>
+        <option>Amministrazione e contabilità</option>
+        <option>Vendite e marketing</option>
+        <option>Risorse umane e formazione</option>
+        <option>Logistica e magazzino</option>
+        <option>Comunicazione interna</option>
+        <option>Reportistica e analisi dati</option>
+      </select>
+      <div class="field-error" id="err-processoKritico">Seleziona un processo</div>
+    </div>
+
+    <div class="form-group">
+      <label>Quanto tempo passa mediamente il team in riunioni o email ogni giorno?</label>
+      <div class="slider-group">
+        <input type="range" id="tempoEmail" min="0" max="8" step="0.5" value="2"
+          oninput="document.getElementById('tempoEmailVal').textContent = this.value + 'h'">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+          <span class="slider-value" id="tempoEmailVal">2h</span>
+          <span style="font-size:12px;color:var(--gray);">per persona / giorno</span>
+        </div>
+        <div class="slider-labels"><span>0h</span><span>4h</span><span>8h</span></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>I vostri processi sono documentati?</label>
+      <div class="card-group cols-2">
+        <label class="card-option">
+          <input type="radio" name="procDocumentati" value="No, tutto è nella testa delle persone">
+          <div class="card-label"><span class="card-icon">🧠</span> No, tutto è nella testa delle persone</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="procDocumentati" value="Parzialmente, solo alcuni processi">
+          <div class="card-label"><span class="card-icon">📄</span> Parzialmente, solo alcuni</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="procDocumentati" value="Sì, ma non aggiornati">
+          <div class="card-label"><span class="card-icon">📁</span> Sì, ma non aggiornati</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="procDocumentati" value="Sì, completi e aggiornati">
+          <div class="card-label"><span class="card-icon">✅</span> Sì, completi e aggiornati</div>
+        </label>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(2)">← Indietro</button>
+      <button class="btn-next" onclick="nextStep(2)">Continua →</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 3: DOLORI ===== -->
+  <div class="step" id="step3">
+    <div class="step-tag">Sezione 3 di 4 — Criticità e Priorità</div>
+    <h1 class="step-title">DOVE<br>SENTI PIÙ<br>IL DOLORE?</h1>
+    <p class="step-sub">Valuta quanto questi problemi impattano sulla tua azienda oggi. 1 = poco, 5 = molto.</p>
+
+    <div style="background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:32px;">
+      <div class="pain-item" id="pain-email">
+        <div class="pain-label">📧 Email e riunioni che rubano troppo tempo</div>
+        <div class="pain-stars" data-field="painEmail"></div>
+      </div>
+      <div class="pain-item" id="pain-delegare">
+        <div class="pain-label">🔄 Difficoltà a delegare e far crescere il team</div>
+        <div class="pain-stars" data-field="painDelegare"></div>
+      </div>
+      <div class="pain-item" id="pain-dati">
+        <div class="pain-label">📊 Decisioni prese senza dati o informazioni chiare</div>
+        <div class="pain-stars" data-field="painDati"></div>
+      </div>
+      <div class="pain-item" id="pain-errori">
+        <div class="pain-label">⚠️ Errori ripetuti per mancanza di procedure</div>
+        <div class="pain-stars" data-field="painErrori"></div>
+      </div>
+      <div class="pain-item" id="pain-tempo">
+        <div class="pain-label">⏱️ Troppo tempo su attività manuali e ripetitive</div>
+        <div class="pain-stars" data-field="painTempo"></div>
+      </div>
+      <div class="pain-item">
+        <div class="pain-label">📉 Difficoltà a monitorare le performance aziendali</div>
+        <div class="pain-stars" data-field="painMonitor"></div>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Hai già provato a usare strumenti AI? <span class="req">*</span></label>
+      <div class="card-group cols-2">
+        <label class="card-option">
+          <input type="radio" name="usaAI" value="No, non ho mai provato">
+          <div class="card-label"><span class="card-icon">🚫</span> No, mai provato</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="usaAI" value="Sì, ChatGPT o simili in modo informale">
+          <div class="card-label"><span class="card-icon">💬</span> Sì, ChatGPT informalmente</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="usaAI" value="Sì, qualche strumento specifico">
+          <div class="card-label"><span class="card-icon">🛠️</span> Sì, qualche strumento</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="usaAI" value="Sì, uso AI in modo strutturato">
+          <div class="card-label"><span class="card-icon">🚀</span> Sì, in modo strutturato</div>
+        </label>
+      </div>
+      <div class="field-error" id="err-usaAI">Seleziona un'opzione</div>
+    </div>
+
+    <div class="form-group">
+      <label>Qual è la tua principale preoccupazione rispetto all'AI?</label>
+      <div class="card-group cols-2">
+        <label class="card-option">
+          <input type="checkbox" name="preoccupazioni" value="Costi troppo alti">
+          <div class="card-label"><span class="card-icon">💰</span> Costi troppo alti</div>
+        </label>
+        <label class="card-option">
+          <input type="checkbox" name="preoccupazioni" value="Non so da dove iniziare">
+          <div class="card-label"><span class="card-icon">🗺️</span> Non so da dove iniziare</div>
+        </label>
+        <label class="card-option">
+          <input type="checkbox" name="preoccupazioni" value="Il team non è pronto">
+          <div class="card-label"><span class="card-icon">👥</span> Il team non è pronto</div>
+        </label>
+        <label class="card-option">
+          <input type="checkbox" name="preoccupazioni" value="Privacy e sicurezza dei dati">
+          <div class="card-label"><span class="card-icon">🔒</span> Privacy e sicurezza dati</div>
+        </label>
+        <label class="card-option">
+          <input type="checkbox" name="preoccupazioni" value="Nessuna preoccupazione">
+          <div class="card-label"><span class="card-icon">✅</span> Nessuna preoccupazione</div>
+        </label>
+        <label class="card-option">
+          <input type="checkbox" name="preoccupazioni" value="Non vedo il beneficio concreto">
+          <div class="card-label"><span class="card-icon">🤔</span> Non vedo il beneficio</div>
+        </label>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(3)">← Indietro</button>
+      <button class="btn-next" onclick="nextStep(3)">Continua →</button>
+    </div>
+  </div>
+
+  <!-- ===== STEP 4: OBIETTIVI ===== -->
+  <div class="step" id="step4">
+    <div class="step-tag">Sezione 4 di 4 — Obiettivi</div>
+    <h1 class="step-title">COSA<br>VUOI<br>OTTENERE?</h1>
+    <p class="step-sub">Ultime domande per calibrare il tuo report e capire come possiamo aiutarti al meglio.</p>
+
+    <div class="info-box">
+      ⭐ Riceverai il tuo <strong>report personalizzato + Certificato di Efficienza Operativa</strong> entro 5 giorni lavorativi, completamente gratuito.
+    </div>
+
+    <div class="form-group">
+      <label>Qual è il tuo obiettivo principale? <span class="req">*</span></label>
+      <div class="card-group cols-2">
+        <label class="card-option">
+          <input type="radio" name="obiettivo" value="Risparmiare tempo e ridurre il caos">
+          <div class="card-label"><span class="card-icon">⏱️</span> Risparmiare tempo, ridurre il caos</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="obiettivo" value="Ridurre i costi operativi">
+          <div class="card-label"><span class="card-icon">💶</span> Ridurre i costi operativi</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="obiettivo" value="Crescere senza assumere più personale">
+          <div class="card-label"><span class="card-icon">📈</span> Crescere senza assumere</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="obiettivo" value="Migliorare la qualità del lavoro">
+          <div class="card-label"><span class="card-icon">🎯</span> Migliorare la qualità</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="obiettivo" value="Essere più competitivi sul mercato">
+          <div class="card-label"><span class="card-icon">🏆</span> Essere più competitivi</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="obiettivo" value="Delegare meglio e liberare tempo">
+          <div class="card-label"><span class="card-icon">🤲</span> Delegare meglio</div>
+        </label>
+      </div>
+      <div class="field-error" id="err-obiettivo">Seleziona un obiettivo</div>
+    </div>
+
+    <div class="form-group">
+      <label>In quanto tempo vorresti vedere i primi risultati?</label>
+      <div class="card-group cols-3">
+        <label class="card-option">
+          <input type="radio" name="tempistiche" value="Subito (1 mese)">
+          <div class="card-label"><span class="card-icon">⚡</span> Subito (1 mese)</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="tempistiche" value="Breve termine (3 mesi)">
+          <div class="card-label"><span class="card-icon">📅</span> Breve (3 mesi)</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="tempistiche" value="Medio termine (6-12 mesi)">
+          <div class="card-label"><span class="card-icon">🗓️</span> Medio (6-12 mesi)</div>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Budget indicativo per un progetto di ottimizzazione</label>
+      <div class="card-group cols-2">
+        <label class="card-option">
+          <input type="radio" name="budget" value="Solo la diagnosi gratuita per ora">
+          <div class="card-label"><span class="card-icon">🆓</span> Solo diagnosi gratuita</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="budget" value="Fino a 2.000€">
+          <div class="card-label"><span class="card-icon">💼</span> Fino a 2.000€</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="budget" value="Tra 2.000€ e 5.000€">
+          <div class="card-label"><span class="card-icon">📦</span> 2.000€ – 5.000€</div>
+        </label>
+        <label class="card-option">
+          <input type="radio" name="budget" value="Oltre 5.000€">
+          <div class="card-label"><span class="card-icon">🏗️</span> Oltre 5.000€</div>
+        </label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Vuoi aggiungere qualcosa che non abbiamo chiesto?</label>
+      <textarea id="noteLibere" placeholder="Descrivi liberamente la tua situazione, le tue sfide o quello che ti aspetti dal report..."></textarea>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-back" onclick="prevStep(4)">← Indietro</button>
+      <button class="btn-next" onclick="submitForm()" id="submitBtn">
+        ✉️ Invia e ricevi il report gratuito
+      </button>
+    </div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✓</div>
+    <div class="success-title">RICHIESTA INVIATA!</div>
+    <p class="success-sub">
+      Abbiamo ricevuto la tua diagnosi. Entro <strong style="color:var(--white);">5 giorni lavorativi</strong> riceverai il tuo report personalizzato con il <strong style="color:var(--accent);">Certificato di Efficienza Operativa</strong> e la stima del valore economico recuperabile.
+    </p>
+    <div class="success-badge">
+      ★ Il tuo Certificato di Efficienza Operativa è in preparazione
+    </div>
+    <p style="margin-top:24px;font-size:13px;color:var(--gray);">Controlla la tua email — riceverai una conferma a breve.</p>
+  </div>
+
+</div>
+</div>
+
+<script>
+// ============================================================
+// CONFIGURAZIONE GOOGLE SHEETS
+// Sostituisci con l'URL del tuo Google Apps Script Web App
+// ============================================================
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzu7Rr4AVfgHn0RV7jCmVwHV3r1EL4s-I7dMiRuCq6hg9nUsLps7U7ign3-DBBw_yQp/exec';
+
+// ============================================================
+// STATO FORM
+// ============================================================
+let currentStep = 1;
+const totalSteps = 4;
+
+// Pain scores
+const painScores = {
+  painEmail: 0, painDelegare: 0, painDati: 0,
+  painErrori: 0, painTempo: 0, painMonitor: 0
+};
+
+// ============================================================
+// INIT STAR RATINGS
+// ============================================================
+document.querySelectorAll('.pain-stars').forEach(container => {
+  const field = container.dataset.field;
+  for (let i = 1; i <= 5; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'star-btn';
+    btn.type = 'button';
+    btn.textContent = i;
+    btn.dataset.value = i;
+    btn.dataset.field = field;
+    btn.onclick = function() {
+      const val = parseInt(this.dataset.value);
+      const f = this.dataset.field;
+      painScores[f] = val;
+      container.querySelectorAll('.star-btn').forEach((b, idx) => {
+        b.classList.toggle('active', idx < val);
+      });
+    };
+    container.appendChild(btn);
+  }
+});
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function nextStep(from) {
+  if (!validateStep(from)) return;
+  goToStep(from + 1);
+}
+
+function prevStep(from) {
+  goToStep(from - 1);
+}
+
+function goToStep(n) {
+  document.getElementById('step' + currentStep).classList.remove('active');
+  currentStep = n;
+  document.getElementById('step' + currentStep).classList.add('active');
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  const pct = (currentStep / totalSteps) * 100;
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent =
+    'SEZIONE ' + currentStep + ' / ' + totalSteps;
+}
+
+// ============================================================
+// VALIDATION
+// ============================================================
+function validateStep(step) {
+  let ok = true;
+
+  if (step === 1) {
+    ok = check('nomeAzienda') & check('nomeContatto') &
+         checkEmail('email') & checkSelect('settore') &
+         checkRadio('dipendenti', 'err-dipendenti');
+  }
+  if (step === 2) {
+    ok = checkCheckbox('strumenti', 'err-strumenti') &
+         checkSelect('processoKritico');
+  }
+  if (step === 3) {
+    ok = checkRadio('usaAI', 'err-usaAI');
+  }
+  if (step === 4) {
+    ok = checkRadio('obiettivo', 'err-obiettivo');
+  }
+  return ok;
+}
+
+function check(id) {
+  const el = document.getElementById(id);
+  const err = document.getElementById('err-' + id);
+  if (!el.value.trim()) {
+    el.classList.add('error');
+    if (err) err.classList.add('show');
+    return false;
+  }
+  el.classList.remove('error');
+  if (err) err.classList.remove('show');
+  return true;
+}
+
+function checkEmail(id) {
+  const el = document.getElementById(id);
+  const err = document.getElementById('err-' + id);
+  const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(el.value);
+  if (!valid) {
+    el.classList.add('error');
+    if (err) err.classList.add('show');
+    return false;
+  }
+  el.classList.remove('error');
+  if (err) err.classList.remove('show');
+  return true;
+}
+
+function checkSelect(id) {
+  const el = document.getElementById(id);
+  const err = document.getElementById('err-' + id);
+  if (!el.value) {
+    el.classList.add('error');
+    if (err) err.classList.add('show');
+    return false;
+  }
+  el.classList.remove('error');
+  if (err) err.classList.remove('show');
+  return true;
+}
+
+function checkRadio(name, errId) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  const err = document.getElementById(errId);
+  if (!checked) {
+    if (err) err.classList.add('show');
+    return false;
+  }
+  if (err) err.classList.remove('show');
+  return true;
+}
+
+function checkCheckbox(name, errId) {
+  const checked = document.querySelectorAll(`input[name="${name}"]:checked`);
+  const err = document.getElementById(errId);
+  if (checked.length === 0) {
+    if (err) err.classList.add('show');
+    return false;
+  }
+  if (err) err.classList.remove('show');
+  return true;
+}
+
+// ============================================================
+// COLLECT DATA
+// ============================================================
+function collectData() {
+  const getRadio = name => {
+    const el = document.querySelector(`input[name="${name}"]:checked`);
+    return el ? el.value : '';
+  };
+  const getChecks = name =>
+    [...document.querySelectorAll(`input[name="${name}"]:checked`)]
+    .map(e => e.value).join(', ');
+
+  return {
+    timestamp: new Date().toLocaleString('it-IT'),
+    nomeAzienda: document.getElementById('nomeAzienda').value,
+    nomeContatto: document.getElementById('nomeContatto').value,
+    email: document.getElementById('email').value,
+    telefono: document.getElementById('telefono').value,
+    settore: document.getElementById('settore').value,
+    dipendenti: getRadio('dipendenti'),
+
+    strumenti: getChecks('strumenti'),
+    processoKritico: document.getElementById('processoKritico').value,
+    tempoEmail: document.getElementById('tempoEmail').value + 'h/giorno',
+    procDocumentati: getRadio('procDocumentati'),
+
+    painEmail: painScores.painEmail,
+    painDelegare: painScores.painDelegare,
+    painDati: painScores.painDati,
+    painErrori: painScores.painErrori,
+    painTempo: painScores.painTempo,
+    painMonitor: painScores.painMonitor,
+    usaAI: getRadio('usaAI'),
+    preoccupazioni: getChecks('preoccupazioni'),
+
+    obiettivo: getRadio('obiettivo'),
+    tempistiche: getRadio('tempistiche'),
+    budget: getRadio('budget'),
+    noteLibere: document.getElementById('noteLibere').value,
+  };
+}
+
+// ============================================================
+// SUBMIT
+// ============================================================
+async function submitForm() {
+  if (!validateStep(4)) return;
+
+  const data = collectData();
+  document.getElementById('loadingOverlay').classList.add('show');
+  document.getElementById('submitBtn').disabled = true;
+
+  try {
+    await fetch(GOOGLE_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    showSuccess();
+  } catch (err) {
+    // Con no-cors il fetch non genera errori anche se la risposta non è leggibile
+    // Mostriamo comunque il successo se la chiamata è partita
+    showSuccess();
+  }
+}
+
+function showSuccess() {
+  document.getElementById('loadingOverlay').classList.remove('show');
+  document.getElementById('step4').classList.remove('active');
+  document.getElementById('successScreen').classList.add('active');
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressLabel').textContent = 'COMPLETATO ✓';
+}
+</script>
+</body>
+</html>
