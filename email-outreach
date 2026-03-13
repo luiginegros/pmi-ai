@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Email — Luigi Negro</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:'Georgia',serif;">
+
+<!-- WRAPPER -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f1f5f9;padding:40px 20px;">
+  <tr>
+    <td align="center">
+
+      <!-- CARD -->
+      <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 40px rgba(0,0,0,0.10);">
+
+        <!-- HEADER DARK -->
+        <tr>
+          <td style="background-color:#0A0F1E;padding:48px 48px 40px;text-align:left;">
+
+            <!-- Logo -->
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="font-family:'Georgia',serif;font-size:13px;letter-spacing:0.2em;text-transform:uppercase;color:#F59E0B;padding-bottom:28px;">
+                  AI · PMI ITALIA
+                </td>
+              </tr>
+            </table>
+
+            <!-- Subject line -->
+            <p style="margin:0 0 16px 0;font-family:'Georgia',serif;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(148,163,184,0.7);">Oggetto dell'email</p>
+
+            <!-- Big headline -->
+            <h1 style="margin:0;font-family:'Georgia',serif;font-size:36px;font-weight:700;line-height:1.15;color:#ffffff;letter-spacing:-0.01em;">
+              Quanto tempo stai<br>
+              <span style="color:#F59E0B;">regalando</span> ogni giorno?
+            </h1>
+
+            <!-- Accent line -->
+            <div style="width:48px;height:3px;background:#F59E0B;border-radius:2px;margin-top:28px;"></div>
+          </td>
+        </tr>
+
+        <!-- BODY -->
+        <tr>
+          <td style="padding:48px 48px 0;background:#ffffff;">
+
+            <!-- Greeting -->
+            <p style="margin:0 0 24px;font-family:'Georgia',serif;font-size:16px;color:#374151;line-height:1.7;">
+              Ciao <strong style="color:#0A0F1E;">[Nome]</strong>,
+            </p>
+
+            <!-- Opening -->
+            <p style="margin:0 0 24px;font-family:'Georgia',serif;font-size:16px;color:#4B5563;line-height:1.8;">
+              La maggior parte degli imprenditori che incontro scopre di perdere <strong style="color:#0A0F1E;">2-3 ore al giorno</strong> in email, riunioni e processi che si ripetono senza mai cambiare. Spesso senza nemmeno accorgersene.
+            </p>
+
+            <!-- Divider -->
+            <div style="height:1px;background:#E5E7EB;margin:32px 0;"></div>
+
+            <!-- Survey intro -->
+            <p style="margin:0 0 8px;font-family:'Georgia',serif;font-size:13px;letter-spacing:0.12em;text-transform:uppercase;color:#F59E0B;font-weight:700;">La diagnosi gratuita</p>
+            <p style="margin:0 0 24px;font-family:'Georgia',serif;font-size:16px;color:#4B5563;line-height:1.8;">
+              Ho creato una survey di <strong style="color:#0A0F1E;">10 minuti</strong> su come lavora la tua azienda — niente dati personali, niente informazioni commerciali o finanziarie, solo il modo in cui operate ogni giorno.
+            </p>
+
+            <!-- Benefits list -->
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:32px;">
+
+              <tr>
+                <td style="padding:14px 20px;background:#F8FAFC;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;margin-bottom:10px;">
+                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                      <td width="28" style="vertical-align:top;padding-top:1px;">
+                        <div style="width:20px;height:20px;background:#F59E0B;border-radius:50%;text-align:center;line-height:20px;font-size:11px;font-weight:bold;color:#0A0F1E;">1</div>
+                      </td>
+                      <td style="font-family:'Georgia',serif;font-size:15px;color:#374151;line-height:1.6;padding-left:12px;">
+                        Le <strong style="color:#0A0F1E;">3 aree</strong> dove stai perdendo più tempo e denaro
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <tr><td style="height:8px;"></td></tr>
+
+              <tr>
+                <td style="padding:14px 20px;background:#F8FAFC;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
+                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                      <td width="28" style="vertical-align:top;padding-top:1px;">
+                        <div style="width:20px;height:20px;background:#F59E0B;border-radius:50%;text-align:center;line-height:20px;font-size:11px;font-weight:bold;color:#0A0F1E;">2</div>
+                      </td>
+                      <td style="font-family:'Georgia',serif;font-size:15px;color:#374151;line-height:1.6;padding-left:12px;">
+                        Una stima concreta di quanto potresti <strong style="color:#0A0F1E;">recuperare in 12 mesi</strong>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <tr><td style="height:8px;"></td></tr>
+
+              <tr>
+                <td style="padding:14px 20px;background:#FFFBEB;border-left:3px solid #F59E0B;border-radius:0 8px 8px 0;">
+                  <table cellpadding="0" cellspacing="0" border="0" width="100%">
+                    <tr>
+                      <td width="28" style="vertical-align:top;padding-top:1px;">
+                        <div style="width:20px;height:20px;background:#F59E0B;border-radius:50%;text-align:center;line-height:20px;font-size:11px;font-weight:bold;color:#0A0F1E;">★</div>
+                      </td>
+                      <td style="font-family:'Georgia',serif;font-size:15px;color:#374151;line-height:1.6;padding-left:12px;">
+                        Il <strong style="color:#0A0F1E;">Certificato di Efficienza Operativa</strong> — utile anche con banche e investitori
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+            </table>
+
+            <!-- Reassurance -->
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-bottom:36px;">
+              <tr>
+                <td style="padding:16px 20px;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;">
+                  <p style="margin:0;font-family:'Georgia',serif;font-size:14px;color:#166534;line-height:1.6;">
+                    ✓ &nbsp;<strong>Nessuna chiamata commerciale. Nessun impegno.</strong>
+                  </p>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Closing -->
+            <p style="margin:0 0 36px;font-family:'Georgia',serif;font-size:16px;color:#4B5563;line-height:1.8;">
+              Se ti va di dare un'occhiata, la trovi qui:
+            </p>
+
+          </td>
+        </tr>
+
+        <!-- CTA BUTTON -->
+        <tr>
+          <td style="padding:0 48px 48px;background:#ffffff;text-align:left;">
+            <table cellpadding="0" cellspacing="0" border="0">
+              <tr>
+                <td style="background:#0A0F1E;border-radius:10px;padding:18px 36px;">
+                  <a href="https://luiginegros.github.io/pmi-ai/survey-pmi-ai.html" style="font-family:'Georgia',serif;font-size:16px;font-weight:700;color:#F59E0B;text-decoration:none;letter-spacing:0.02em;">
+                    📋 &nbsp;Compila la diagnosi gratuita →
+                  </a>
+                </td>
+              </tr>
+            </table>
+            <p style="margin:12px 0 0;font-family:'Georgia',serif;font-size:12px;color:#9CA3AF;">
+              Oppure rispondi a questa email, ti rispondo entro 24 ore.
+            </p>
+          </td>
+        </tr>
+
+        <!-- DIVIDER -->
+        <tr>
+          <td style="padding:0 48px;">
+            <div style="height:1px;background:#E5E7EB;"></div>
+          </td>
+        </tr>
+
+        <!-- FOOTER -->
+        <tr>
+          <td style="padding:36px 48px;background:#ffffff;">
+            <table cellpadding="0" cellspacing="0" border="0" width="100%">
+              <tr>
+                <td>
+                  <!-- Name -->
+                  <p style="margin:0 0 4px;font-family:'Georgia',serif;font-size:16px;font-weight:700;color:#0A0F1E;">Luigi Negro</p>
+                  <p style="margin:0 0 16px;font-family:'Georgia',serif;font-size:13px;color:#6B7280;letter-spacing:0.05em;text-transform:uppercase;">AI Expert · Ottimizzazione Processi PMI</p>
+
+                  <!-- Contacts -->
+                  <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="padding-right:24px;">
+                        <a href="tel:+393299576151" style="font-family:'Georgia',serif;font-size:14px;color:#4B5563;text-decoration:none;">
+                          📞 +39 329 957 6151
+                        </a>
+                      </td>
+                      <td>
+                        <a href="/cdn-cgi/l/email-protection#f39f869a949add9d9481c2cacacbb3949e929a9fdd909c9e" style="font-family:'Georgia',serif;font-size:14px;color:#F59E0B;text-decoration:none;">
+                          ✉️ <span class="__cf_email__" data-cfemail="bbd7ced2dcd295d5dcc98a828283fbdcd6dad2d795d8d4d6">[email&#160;protected]</span>
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+
+        <!-- BOTTOM BAR -->
+        <tr>
+          <td style="background:#0A0F1E;padding:20px 48px;">
+            <p style="margin:0;font-family:'Georgia',serif;font-size:11px;color:rgba(148,163,184,0.5);letter-spacing:0.08em;text-transform:uppercase;">
+              Hai ricevuto questa email perché siamo in contatto. &nbsp;·&nbsp; Rispondi per
